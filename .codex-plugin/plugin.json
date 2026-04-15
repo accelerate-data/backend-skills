@@ -1,0 +1,26 @@
+{
+  "name": "ad-backend",
+  "description": "Backend coding standards for Rust, Tauri, and Node sidecar architecture.",
+  "author": {
+    "name": "Accelerate Data"
+  },
+  "repository": "https://github.com/accelerate-data/backend-skills",
+  "license": "MIT",
+  "keywords": [
+    "skills",
+    "backend",
+    "rust",
+    "tauri",
+    "codex",
+    "claude-code"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Backend Skills",
+    "shortDescription": "Backend coding standards and Tauri framework guides.",
+    "developerName": "Accelerate Data",
+    "category": "Coding",
+    "capabilities": [],
+    "screenshots": []
+  }
+}

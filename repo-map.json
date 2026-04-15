@@ -1,0 +1,36 @@
+{
+  "generated_at": "2026-04-15T00:00:00Z",
+  "repo_root": "backend-skills",
+  "primary_languages": ["Markdown", "JSON"],
+  "applications": [
+    {
+      "name": "backend-skills plugin",
+      "type": "shared plugin source",
+      "description": "Single plugin-source repository with Claude and Codex manifests, canonical skills under skills/, and rules under rules/."
+    }
+  ],
+  "modules": {
+    "claude_manifest": {
+      "path": ".claude-plugin/plugin.json",
+      "description": "Claude plugin manifest."
+    },
+    "codex_manifest": {
+      "path": ".codex-plugin/plugin.json",
+      "description": "Codex plugin manifest."
+    },
+    "skills": {
+      "path": "skills/",
+      "description": "Canonical skill directories: tauri."
+    },
+    "rules": {
+      "path": "rules/",
+      "description": "Always-on backend coding rules."
+    }
+  },
+  "key_directories": {
+    "skills/": "All skill content owned by this plugin repo",
+    "rules/": "Always-on rule files",
+    ".claude-plugin/": "Claude plugin manifest",
+    ".codex-plugin/": "Codex plugin manifest"
+  }
+}
