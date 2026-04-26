@@ -1,198 +1,76 @@
 ---
 name: tauri
-description: Tauri framework for building cross-platform desktop and mobile apps. Use for desktop app development, native integrations, Rust backend, and web-based UIs.
+description: Use when building or debugging Tauri apps with src-tauri, tauri.conf.json, capabilities, permissions, invoke, events, @tauri-apps/api, Rust commands, plugins, sidecars, WebView2, signing, updater, mobile, build, bundle, or desktop distribution.
 ---
 
-# Tauri Skill
+# Tauri
 
-Comprehensive assistance with Tauri development, generated from official documentation.
+Use this skill for project-agnostic Tauri app work. Route to official Tauri docs, inspect the target app's existing choices, and use the app's current package manager, framework, versions, scripts, test runner, and directory layout.
 
-## When to Use This Skill
+## First Inspect
 
-This skill should be triggered when:
-- Building cross-platform desktop applications with Rust + WebView
-- Implementing native system integrations (file system, notifications, system tray)
-- Setting up Tauri project structure and configuration
-- Debugging Tauri applications in VS Code or Neovim
-- Configuring Windows/macOS/Linux code signing for distribution
-- Developing mobile apps with Tauri (Android/iOS)
-- Creating Tauri plugins for custom native functionality
-- Implementing IPC (Inter-Process Communication) between frontend and backend
-- Optimizing Tauri app security and permissions
-- Setting up CI/CD pipelines for Tauri app releases
+Before editing, inspect:
 
-## Key Concepts
+- `package.json` and lockfile for package manager, scripts, frontend framework, and `@tauri-apps/*` versions.
+- `src-tauri/Cargo.toml` for Tauri crates, plugins, Rust edition, and sidecar dependencies.
+- `src-tauri/tauri.conf.*` for `build`, `app`, `bundle`, `plugins`, identifiers, windows, updater, and security.
+- `src-tauri/capabilities/` for permissions and window/webview boundaries.
+- Existing command modules, IPC wrappers, state, and tests.
 
-### Multi-Process Architecture
-Tauri uses a **Core Process** (Rust) and **WebView Process** (HTML/CSS/JS) architecture:
-- **Core Process**: Manages windows, system tray, IPC routing, and has full OS access
-- **WebView Process**: Renders UI using system WebViews (no bundled browser!)
-- **Principle of Least Privilege**: Each process has minimal required permissions
+## Official Docs
 
-### Inter-Process Communication (IPC)
-Two IPC primitives:
-- **Events**: Fire-and-forget, one-way messages (both Core -> WebView and WebView -> Core)
-- **Commands**: Request-response pattern using `invoke()` API (WebView -> Core only)
+| Task | Official docs |
+| --- | --- |
+| Create or understand a project | https://v2.tauri.app/start/ |
+| Frontend configuration | https://v2.tauri.app/start/frontend/ |
+| CLI commands | https://v2.tauri.app/reference/cli/ |
+| Configuration schema | https://v2.tauri.app/reference/config/ |
+| JavaScript API | https://v2.tauri.app/reference/javascript/api/ |
+| Commands and `invoke` | https://v2.tauri.app/develop/calling-rust/ |
+| Events and listeners | https://v2.tauri.app/develop/calling-frontend/ |
+| Capabilities | https://v2.tauri.app/security/capabilities/ |
+| Permissions | https://v2.tauri.app/security/permissions/ |
+| Scopes | https://v2.tauri.app/security/scope/ |
+| CSP | https://v2.tauri.app/security/csp/ |
+| Plugins and feature support | https://v2.tauri.app/plugin/ |
+| File system plugin | https://v2.tauri.app/plugin/file-system/ |
+| Sidecars | https://v2.tauri.app/develop/sidecar/ |
+| Node.js sidecar | https://v2.tauri.app/learn/sidecar-nodejs/ |
+| Distribution | https://v2.tauri.app/distribute/ |
+| Windows signing | https://v2.tauri.app/distribute/sign/windows/ |
+| v1 to v2 migration | https://v2.tauri.app/start/migrate/from-tauri-1/ |
 
-### Why Tauri?
-- **Small binaries**: Uses OS WebViews (Microsoft Edge WebView2/WKWebView/webkitgtk)
-- **Security-first**: Message passing architecture prevents direct function access
-- **Multi-platform**: Desktop (Windows/macOS/Linux) + Mobile (Android/iOS)
+## Useful Commands
 
-## Quick Reference
+Use the package manager already present in the app.
 
-### 1. Project Setup - Cargo.toml
+| Need | npm | pnpm | yarn | cargo |
+| --- | --- | --- | --- | --- |
+| Dev app | `npm run tauri dev` | `pnpm tauri dev` | `yarn tauri dev` | `cargo tauri dev` |
+| Build app | `npm run tauri build` | `pnpm tauri build` | `yarn tauri build` | `cargo tauri build` |
+| Bundle existing build | `npm run tauri bundle` | `pnpm tauri bundle` | `yarn tauri bundle` | `cargo tauri bundle` |
+| App/environment info | `npm run tauri info` | `pnpm tauri info` | `yarn tauri info` | `cargo tauri info` |
+| Add plugin | `npm run tauri add <plugin>` | `pnpm tauri add <plugin>` | `yarn tauri add <plugin>` | `cargo tauri add <plugin>` |
+| Remove plugin | `npm run tauri remove <plugin>` | `pnpm tauri remove <plugin>` | `yarn tauri remove <plugin>` | `cargo tauri remove <plugin>` |
+| New capability | `npm run tauri capability new` | `pnpm tauri capability new` | `yarn tauri capability new` | `cargo tauri capability new` |
+| List permissions | `npm run tauri permission ls` | `pnpm tauri permission ls` | `yarn tauri permission ls` | `cargo tauri permission ls` |
+| Android dev | `npm run tauri android dev` | `pnpm tauri android dev` | `yarn tauri android dev` | `cargo tauri android dev` |
+| iOS dev | `npm run tauri ios dev` | `pnpm tauri ios dev` | `yarn tauri ios dev` | `cargo tauri ios dev` |
+| Migrate v1 to v2 | `npm run tauri migrate` | `pnpm tauri migrate` | `yarn tauri migrate` | `cargo tauri migrate` |
 
-```toml
-[build-dependencies]
-tauri-build = "2.0.0"
+## App-Building Practices
 
-[dependencies]
-tauri = { version = "2.0.0" }
-```
+- Use official plugins before custom native code when the feature exists.
+- Use commands for request/response IPC; use events for lifecycle, progress, or broadcast updates.
+- Keep privileged logic and secrets out of the WebView.
+- Scope capabilities by window/webview and permission.
+- Use scopes for file, shell, HTTP, and other sensitive access.
+- Keep CSP as narrow as the app allows.
+- Align Tauri Rust crates, npm packages, and plugin versions with the existing app unless explicitly upgrading.
+- Run the target app's existing frontend checks, `cargo check --manifest-path src-tauri/Cargo.toml`, and the relevant Tauri build command after app changes.
 
-### 2. Creating a Tauri Command
-```rust
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}!", name)
-}
+## References
 
-// In main.rs
-fn main() {
-    tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet])
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
-}
-```
-
-### 3. Calling Commands from Frontend
-```javascript
-import { invoke } from '@tauri-apps/api/core';
-
-const greeting = await invoke('greet', { name: 'World' });
-console.log(greeting); // "Hello, World!"
-```
-
-### 4. Emitting Events
-```rust
-// From Rust
-app.emit_all("event-name", Payload { message: "Hello".into() }).unwrap();
-
-// Listening in JavaScript
-import { listen } from '@tauri-apps/api/event';
-
-const unlisten = await listen('event-name', (event) => {
-    console.log(event.payload.message);
-});
-```
-
-### 5. Rust State Management
-```rust
-let data = app.state::<AppData>();
-```
-
-### 6. VS Code Debugging - launch.json
-```json
-{
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "type": "lldb",
-      "request": "launch",
-      "name": "Tauri Development Debug",
-      "cargo": {
-        "args": [
-          "build",
-          "--manifest-path=./src-tauri/Cargo.toml",
-          "--no-default-features"
-        ]
-      },
-      "preLaunchTask": "ui:dev"
-    }
-  ]
-}
-```
-
-### 7. Windows Code Signing Configuration
-```json
-{
-  "tauri": {
-    "bundle": {
-      "windows": {
-        "certificateThumbprint": "A1B1A2B2A3B3A4B4A5B5A6B6A7B7A8B8A9B9A0B0",
-        "digestAlgorithm": "sha256",
-        "timestampUrl": "http://timestamp.comodoca.com"
-      }
-    }
-  }
-}
-```
-
-### 8. Opening DevTools Programmatically
-```rust
-use tauri::Manager;
-
-#[tauri::command]
-fn open_devtools(window: tauri::Window) {
-    window.open_devtools();
-}
-```
-
-### 9. GitHub Actions - Publish Workflow
-```yaml
-name: 'publish'
-on:
-  push:
-    tags:
-      - 'app-v*'
-```
-
-## Reference Files
-
-This skill includes comprehensive documentation organized into categories:
-
-- **core-concepts.md** - Process model, IPC, debugging, architecture
-- **getting-started.md** - Project setup and first app tutorials
-- **plugins.md** - Plugin development and integration
-- **reference.md** - API references and configuration schemas
-- **security.md** - CSP, secure IPC, permissions, WebView security
-- **distribution.md** - Code signing, CI/CD, platform packaging
-
-## Debugging Quick Tips
-
-### Enable Rust Backtraces
-```bash
-RUST_BACKTRACE=1 tauri dev
-```
-
-### Create Debug Build
-```bash
-npm run tauri build -- --debug
-```
-
-### Open DevTools
-```rust
-use tauri::Manager;
-window.open_devtools();
-window.close_devtools();
-```
-
-## Platform-Specific Notes
-
-### Windows
-- Uses **Microsoft Edge WebView2** (automatically installed on Windows 11)
-- Code signing required for SmartScreen reputation
-
-### macOS
-- Uses **WKWebView** (native to macOS)
-- Code signing with Apple Developer certificate
-
-### Linux
-- Uses **webkitgtk** (must be installed separately)
-- Package formats: .deb, .rpm, .AppImage
-
-## Resources
-
-- Official docs: https://tauri.app/
+- `references/app-building-links.md` - categorized official Tauri docs.
+- `references/commands.md` - Tauri CLI and verification commands.
+- `references/security.md` - capabilities, permissions, scopes, CSP, and sensitive plugin surfaces.

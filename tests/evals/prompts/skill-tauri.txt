@@ -1,0 +1,55 @@
+You are evaluating the `tauri` skill for a specific scenario.
+
+Scenario:
+
+{{scenario}}
+
+Skill contract:
+
+- The skill is project-agnostic. It must not assume a package manager, frontend framework, test runner, product, organization, repository, or local machine path.
+- Before editing, it should inspect standard Tauri app files: `package.json`, lockfile, `src-tauri/Cargo.toml`, `src-tauri/tauri.conf.*`, `src-tauri/capabilities/`, existing command modules, IPC wrappers, state, and tests.
+- It should route agents to official Tauri documentation instead of copying long local snippets.
+- It should include useful Tauri lifecycle commands and package-manager variants.
+- It should use official plugins before custom native code when a plugin exists.
+- It should treat capabilities, permissions, scopes, CSP, file system access, shell/process access, updater behavior, and sidecars as Tauri-specific security surfaces.
+- It should keep privileged logic and secrets out of the WebView.
+- It should align Tauri Rust crates, npm packages, and plugin versions with the target app unless explicitly upgrading.
+- It should run the target app's existing frontend checks, `cargo check --manifest-path src-tauri/Cargo.toml`, and the relevant Tauri build or bundle command after app changes.
+
+Answer each field for what the skill should direct an agent to do in this exact scenario.
+
+Do not actually call tools. Return JSON only with this shape. Include every key exactly, even when the value is false:
+
+```json
+{
+  "inspects_project_files_first": true,
+  "uses_existing_package_manager": true,
+  "assumes_specific_frontend_framework": false,
+  "links_official_tauri_docs": true,
+  "uses_long_copied_doc_snippets": false,
+  "includes_tauri_cli_commands": true,
+  "routes_to_frontend_config_docs": false,
+  "routes_to_invoke_docs": false,
+  "routes_to_events_docs": false,
+  "routes_to_capabilities_docs": false,
+  "routes_to_permissions_docs": false,
+  "routes_to_scopes_docs": false,
+  "routes_to_csp_docs": false,
+  "routes_to_plugin_docs": false,
+  "routes_to_filesystem_plugin_docs": false,
+  "routes_to_sidecar_docs": false,
+  "routes_to_distribution_docs": false,
+  "routes_to_signing_docs": false,
+  "prefers_official_plugins": true,
+  "keeps_secrets_out_of_webview": true,
+  "scopes_capabilities_by_window_or_webview": false,
+  "uses_scopes_for_sensitive_access": false,
+  "keeps_csp_narrow": false,
+  "aligns_versions_with_existing_app": true,
+  "verifies_frontend_checks": true,
+  "verifies_cargo_check": true,
+  "verifies_tauri_build_or_bundle": false,
+  "avoids_project_specific_content": true,
+  "notes": "string"
+}
+```

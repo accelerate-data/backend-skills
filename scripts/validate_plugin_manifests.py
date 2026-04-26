@@ -18,6 +18,16 @@ MANIFEST_PATHS = (
 )
 REQUIRED_FIELDS = ("name", "description", "version", "author", "repository", "license", "skills")
 SEMVER_RE = re.compile(r"^\d+\.\d+\.\d+$")
+FORBIDDEN_SKILL_PATTERNS = (
+    "```unknown",
+    "json title=",
+    "toml title=",
+    "@astrojs",
+    "@assets/",
+    "<CardGrid",
+    "<LinkCard",
+    "<ShowSolution",
+)
 
 
 def load_json(path: Path) -> dict[str, Any]:
@@ -38,6 +48,25 @@ def normalized_skills_path(value: Any) -> str | None:
     if not isinstance(value, str):
         return None
     return value.rstrip("/")
+
+
+def validate_skill_content(root: Path) -> list[str]:
+    errors: list[str] = []
+    skills_root = root / "skills"
+    if not skills_root.exists():
+        return errors
+
+    for path in sorted(skills_root.rglob("*.md")):
+        try:
+            content = path.read_text(encoding="utf-8")
+        except UnicodeDecodeError as exc:
+            errors.append(f"{path.relative_to(root)}: invalid UTF-8: {exc}")
+            continue
+
+        for pattern in FORBIDDEN_SKILL_PATTERNS:
+            if pattern in content:
+                errors.append(f"{path.relative_to(root)}: forbidden extracted-doc artifact {pattern!r}")
+    return errors
 
 
 def validate(root: Path) -> list[str]:
@@ -76,6 +105,7 @@ def validate(root: Path) -> list[str]:
         if claude.get(field) != codex.get(field):
             errors.append(f"manifest mismatch: '{field}' differs between Claude and Codex")
 
+    errors.extend(validate_skill_content(root))
     return errors
 
 

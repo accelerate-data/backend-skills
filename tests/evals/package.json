@@ -1,0 +1,17 @@
+{
+  "name": "@tauri-ui/evals",
+  "private": true,
+  "description": "Promptfoo eval harness for the Tauri skill",
+  "scripts": {
+    "eval": "npm run eval:tauri && npm run eval:coverage && npm run eval:codex-compatibility",
+    "eval:tauri": "./scripts/promptfoo.sh eval --no-cache -c packages/tauri/skill-tauri.yaml",
+    "eval:coverage": "node scripts/check-skill-eval-coverage.js",
+    "eval:codex-compatibility": "node scripts/check-codex-compatibility.js",
+    "test:opencode-cli-provider": "node --test scripts/opencode-cli-provider.test.js",
+    "view": "./scripts/promptfoo.sh view"
+  },
+  "dependencies": {
+    "@opencode-ai/sdk": "1.14.21",
+    "promptfoo": "0.121.7"
+  }
+}
