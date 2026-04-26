@@ -20,7 +20,7 @@
     },
     "skills": {
       "path": "skills/",
-      "description": "Canonical skill directories: tauri."
+      "description": "Canonical skill directories: tauri, with app-building links and command references under skills/tauri/references/."
     },
     "rules": {
       "path": "rules/",
@@ -32,7 +32,7 @@
     },
     "tests": {
       "path": "tests/",
-      "description": "Unit tests for repository validation scripts."
+      "description": "Unit tests for repository validation scripts plus Promptfoo/OpenCode evals under tests/evals."
     }
   },
   "key_directories": {
@@ -46,6 +46,9 @@
   "commands": {
     "validate_plugin_manifests": "python3 scripts/validate_plugin_manifests.py",
     "check_plugin_version_bump": "python3 scripts/check_plugin_version_bump.py --base-ref origin/main",
-    "test_validation_scripts": "python3 -m unittest discover -s tests"
+    "test_validation_scripts": "python3 -m unittest discover -s tests",
+    "eval_coverage": "npm --prefix tests/evals run eval:coverage",
+    "eval_codex_compatibility": "npm --prefix tests/evals run eval:codex-compatibility",
+    "eval_tauri": "npm --prefix tests/evals run eval:tauri"
   }
 }

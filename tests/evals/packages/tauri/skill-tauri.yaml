@@ -1,0 +1,98 @@
+# yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
+description: "tauri skill — project-agnostic app-building docs, commands, security, plugins, and verification"
+
+prompts:
+  - id: tauri
+    label: tauri
+    raw: file://../../prompts/skill-tauri.txt
+
+providers:
+  - id: file://../../scripts/opencode-cli-provider.js
+    config:
+      provider_id: opencode
+      model: qwen3.6-plus
+      working_dir: ../..
+      agent: build
+
+defaultTest:
+  assert:
+    - type: javascript
+      value: file://../../assertions/check-tauri-skill-contract.js
+
+tests:
+  - description: "baseline — add a Rust command and call it from the frontend"
+    vars:
+      scenario: |-
+        The user asks: "Add a Rust command to load a project and call it from the frontend."
+        The target app is an existing Tauri app. Its package manager and frontend framework are unknown.
+      expect_inspects_project_files_first: "true"
+      expect_uses_existing_package_manager: "true"
+      expect_assumes_specific_frontend_framework: "false"
+      expect_links_official_tauri_docs: "true"
+      expect_routes_to_invoke_docs: "true"
+      expect_includes_tauri_cli_commands: "true"
+      expect_aligns_versions_with_existing_app: "true"
+      expect_verifies_frontend_checks: "true"
+      expect_verifies_cargo_check: "true"
+      expect_avoids_project_specific_content: "true"
+      forbidden_terms: "react-only, npm-only, /users/"
+
+  - description: "baseline — add filesystem access with least privilege"
+    vars:
+      scenario: |-
+        The user asks: "Let the settings window read one config file from app config."
+        The app already has `src-tauri/capabilities/`.
+      expect_inspects_project_files_first: "true"
+      expect_links_official_tauri_docs: "true"
+      expect_routes_to_capabilities_docs: "true"
+      expect_routes_to_permissions_docs: "true"
+      expect_routes_to_scopes_docs: "true"
+      expect_routes_to_filesystem_plugin_docs: "true"
+      expect_prefers_official_plugins: "true"
+      expect_scopes_capabilities_by_window_or_webview: "true"
+      expect_uses_scopes_for_sensitive_access: "true"
+      expect_keeps_secrets_out_of_webview: "true"
+      expect_verifies_cargo_check: "true"
+
+  - description: "baseline — configure Windows signing and release build"
+    vars:
+      scenario: |-
+        The user asks: "Configure Windows signing and tell me the release commands."
+        The app is already on Tauri v2.
+      expect_inspects_project_files_first: "true"
+      expect_links_official_tauri_docs: "true"
+      expect_routes_to_distribution_docs: "true"
+      expect_routes_to_signing_docs: "true"
+      expect_includes_tauri_cli_commands: "true"
+      expect_verifies_tauri_build_or_bundle: "true"
+      expect_uses_existing_package_manager: "true"
+      expect_avoids_project_specific_content: "true"
+      forbidden_terms: "tauri.bundle, hardcoded org"
+
+  - description: "baseline — add sidecar without requiring user-installed runtime"
+    vars:
+      scenario: |-
+        The user asks: "Bundle a Node helper process with this desktop app."
+        The agent must not assume users will install Node separately.
+      expect_inspects_project_files_first: "true"
+      expect_links_official_tauri_docs: "true"
+      expect_routes_to_sidecar_docs: "true"
+      expect_prefers_official_plugins: "true"
+      expect_keeps_secrets_out_of_webview: "true"
+      expect_verifies_tauri_build_or_bundle: "true"
+      expect_uses_existing_package_manager: "true"
+      required_terms: "sidecar"
+
+  - description: "baseline — harden remote assets and IPC security"
+    vars:
+      scenario: |-
+        The user asks: "The app needs to load a remote dashboard and call local APIs. Make it safe."
+      expect_inspects_project_files_first: "true"
+      expect_links_official_tauri_docs: "true"
+      expect_routes_to_capabilities_docs: "true"
+      expect_routes_to_csp_docs: "true"
+      expect_routes_to_scopes_docs: "true"
+      expect_uses_scopes_for_sensitive_access: "true"
+      expect_keeps_csp_narrow: "true"
+      expect_keeps_secrets_out_of_webview: "true"
+      expect_verifies_cargo_check: "true"

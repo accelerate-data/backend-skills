@@ -62,6 +62,23 @@ class ManifestValidationTests(unittest.TestCase):
         self.assertIn(".codex-plugin/plugin.json: missing required field 'version'", errors)
         self.assertIn(".codex-plugin/plugin.json: version must be a semver string like 1.2.3", errors)
 
+    def test_validate_rejects_extracted_skill_artifacts(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            write_valid_pair(root)
+            refs_dir = root / "skills" / "tauri" / "references"
+            refs_dir.mkdir(parents=True)
+            (refs_dir / "bad.md").write_text(
+                "json title=tauri.conf.json\n```unknown\n@astrojs/starlight\n",
+                encoding="utf-8",
+            )
+
+            errors = validate(root)
+
+        self.assertTrue(any("bad.md" in error and "json title=" in error for error in errors))
+        self.assertTrue(any("bad.md" in error and "```unknown" in error for error in errors))
+        self.assertTrue(any("bad.md" in error and "@astrojs" in error for error in errors))
+
 
 if __name__ == "__main__":
     unittest.main()
